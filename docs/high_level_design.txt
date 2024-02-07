@@ -1,0 +1,45 @@
+High level design:-
+
+a) Server
+This is the entrypoint in the application where requests from different client via the REST or gRPC protocol
+is recieved and put on a queue like kafka or mqtt from where a message broker will distribute the requests to 
+next stage.
+
+Note:- We have to support gRPC and REST protocols.
+
+b) Validator and prioritizer 
+
+The request is then passed to a request validator and prioritizer. This part either rejects a request if validation fails and logs it or
+puts it on a queue according the priority. There will be an interface ui associated with this for setting the validations.
+
+c) Rate Limiter
+
+Limits the rate for the client as well as the reciever so as not to be loaded with requests and not loading the
+reciever with notifications.
+
+d) Notification Handler on the basis of user preference
+Expose an api to change a particular notification preference like channel of communication via email, phone or app or a custom rate limiting.
+Handler puts the request on queue again for processing by channel handlers.
+
+e) Channel Handlers:-
+These are basically adapters for communication between different channels of communication like email, phone, In app. This has to be
+extendible in the form of library so that someone wanting to extend the project can write their adapter and register on as a consumer.
+
+f) Notification Tracker:-
+Save all the notification data to a db and create a ui to search for the notifications.
+
+g) Transaction Data Parser:-
+
+We collect the data from kafka while validation phase and send it to Transaction Data parser.
+
+h) User Segmentation and Search:-
+Parsed Transaction data is moved to a elastic search db and a query engine or applying different sorts of query will be built.
+Rule engines can also be applied to this for sending notifications on daily basis or monthly basis.
+
+i) Bulk Notification:-
+Bulk notification service should be able to query the notifications in elastic search and schedule the request for notification via server.
+
+reference:-
+https://www.youtube.com/watch?v=CUwt9_l0DOg
+
+

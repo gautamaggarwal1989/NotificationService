@@ -1,0 +1,3 @@
+Backend:- Python /FastAPI/ Kafka/ Celery
+Database:- MySQL for user preferences, Cassandra for storing notifications, ElasticSearch for query engine.
+Dashboard:- Javascript, html and css.(Will explore further on this.)

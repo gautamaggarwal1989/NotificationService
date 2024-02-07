@@ -1,0 +1,13 @@
+Functional Requirements:-
+a) Notification.
+b) Bulk notifications
+c) Periodic notifications
+d) Dashboard to configure and monitor.
+e) Support for gRPC and REST requests.
+f) Extendible channel handlers.
+
+Non Functional Requirements:-
+a) Should be reliable
+b) scalable
+c) plugable
+
