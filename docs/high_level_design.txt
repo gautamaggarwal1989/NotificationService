@@ -27,19 +27,3 @@ extendible in the form of library so that someone wanting to extend the project 
 
 f) Notification Tracker:-
 Save all the notification data to a db and create a ui to search for the notifications.
-
-g) Transaction Data Parser:-
-
-We collect the data from kafka while validation phase and send it to Transaction Data parser.
-
-h) User Segmentation and Search:-
-Parsed Transaction data is moved to a elastic search db and a query engine or applying different sorts of query will be built.
-Rule engines can also be applied to this for sending notifications on daily basis or monthly basis.
-
-i) Bulk Notification:-
-Bulk notification service should be able to query the notifications in elastic search and schedule the request for notification via server.
-
-reference:-
-https://www.youtube.com/watch?v=CUwt9_l0DOg
-
-
