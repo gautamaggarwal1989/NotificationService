@@ -27,3 +27,9 @@ extendible in the form of library so that someone wanting to extend the project 
 
 f) Notification Tracker:-
 Save all the notification data to a db and create a ui to search for the notifications.
+
+## Two clusters of kafka will be required
+a) One to load the requests
+b) second to load the finalized and rate limited requests.
+(For our project we will be using the same cluster for both.
+Since topic names are different, we wont face any issues with them.)
