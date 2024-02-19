@@ -53,12 +53,16 @@ class NotificationProducer:
         topic_name = self.get_topic(message)
         self.producer.send(topic_name, message)
 
+    # context management for the notification object.
     def __enter__(self):
-        self.producer = KafkaProducer(
-            bootstrap_servers=BOOTSTRAP_SERVERS,
-            # Serialize the json messages
-            value_serializer=lambda x: json.dumps(x).encode('utf-8')
-        )
+        try:
+            self.producer = KafkaProducer(
+                bootstrap_servers=BOOTSTRAP_SERVERS,
+                # Serialize the json messages
+                value_serializer=lambda x: json.dumps(x).encode('utf-8')
+            )
+        except Exception:
+            print('#TODO: handle this later sometime in future.')
 
         return self
 
