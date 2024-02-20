@@ -25,10 +25,12 @@ Note: Each of the faust application can run on a seperate container or
 machine to scale horizonatally.
 '''
 
+import json
+from datetime import datetime
 
 import faust
 
-from config import BOOTSTRAP_SERVERS
+from config import BOOTSTRAP_SERVERS, NOTIFICATION_CHANNELS, TIMESTAMP_FORMAT
 
 
 class Notification(faust.Record):
@@ -49,24 +51,42 @@ app = faust.App(
     ]
 )
 
+def timestamp_valid(timestr, format=TIMESTAMP_FORMAT):
+    ''' validates if a given timestamp is of given format
+    and is a valid timestamp object.
+    '''
+    try:
+        timestamp_object = datetime.strptime(timestr, format)
 
-class NotificationValidator:
+        return True
+    except ValueError:
+        return False
+
+
+def validate_data(data):
     ''' Notification validator class.
     Validation1: Channel should be one of predefined value.
-    Validation2: Source should be one of predefined value.
-    Validation3: UUID should not repeat.
-    Validation4: Type should be one of predefined value.
-    Validation5: Timestamp should be valid.
-    Validation6: Priority should be a valid value.
-
-    If the notification validation fails, put them on a seperate
-    kafka topic so that logging service can update the db.
+    Validation2: TimeStamp should be valid
+    Validation3: Priority should be low, medium or high
     '''
+    try:
+        data = json.loads(data)
 
+        if data['channel'] not in NOTIFICATION_CHANNELS:
+            raise Exception('Invalid channel name!')
+        
+        if timestamp_valid(data['timestamp']):
+            raise Exception('Invalid timestamp!')
+        
+        if data['priority'] not in ['low', 'medium', 'high']:
+            raise Exception('Invalid Priority setting!')
+
+    except Exception as e:
+        print('Write the logic to log the failed request to db.')
 
 
 @app.agent(value_type=Notification)
-async def validate(notification):
+async def filter_stream(notification):
     ''' Validates and prioritize the message against given
     rate limiting conditions.
     Uses redis for buffering as well as rate limiting.
@@ -76,4 +96,5 @@ async def validate(notification):
     consumers for that channel. For example, messages with channel set to
     mobile should be processed by a consumer subscribed to mobile topic.
     '''
+    
     

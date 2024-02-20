@@ -8,3 +8,13 @@ BOOTSTRAP_SERVERS = [
     'localhost:9094'
 ]
 
+# Add your custom channel here.
+NOTIFICATION_CHANNELS = [
+    'mobile',
+    'email',
+    'whatsapp',
+    'app'
+]
+
+# All timestamps in the application will use this format
+TIMESTAMP_FORMAT = '%Y-%m-%d %H:%M:%S'
