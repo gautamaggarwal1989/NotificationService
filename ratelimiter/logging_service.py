@@ -7,3 +7,5 @@ We will expose apis in fastapi to show this information to a dashboard.
 Note: Each of the faust application can run on a seperate container or
 machine to scale horizonatally.
 '''
+import sys
+sys.path.append('..')

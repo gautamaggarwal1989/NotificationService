@@ -1,0 +1,1 @@
+''' Limiter for app notifications'''
