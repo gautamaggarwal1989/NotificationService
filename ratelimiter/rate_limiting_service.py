@@ -58,28 +58,12 @@ class FilterStreamMixin:
 
     Rewrite this mixin for a specific filtering strategy.
     '''
-    
-        
+ 
 
-
-class BaseRateLimiterMixin:
-    ''' Validates and prioritize the message against given
-    rate limiting conditions.
-    Uses redis for buffering as well as rate limiting.
-
-    Messages which qualifies the validation and pass the rate limiting
-    should be moved to process kafka topic to be processed by corresponding
-    consumers for that channel. For example, messages with channel set to
-    mobile should be processed by a consumer subscribed to mobile topic.
-
-
-    This is the base class. Inherit this to write logic for developing seperate logic
-    for ratelimiting strategy.
+class ValidationMixin:
+    ''' Change the logic in this class or use same depending
+    on the requirements.
     '''
-
-    def __init__(self, app, topic):
-        self.app = app
-        self.topic = topic
 
     def timestamp_valid(self, timestr, format=TIMESTAMP_FORMAT):
         ''' validates if a given timestamp is of given format
@@ -115,19 +99,41 @@ class BaseRateLimiterMixin:
             return False, {}
 
         return True, data
+
+
+class BaseRateLimiterMixin:
+    ''' Validates and prioritize the message against given
+    rate limiting conditions.
+    Uses redis for buffering as well as rate limiting.
+
+    Messages which qualifies the validation and pass the rate limiting
+    should be moved to process kafka topic to be processed by corresponding
+    consumers for that channel. For example, messages with channel set to
+    mobile should be processed by a consumer subscribed to mobile topic.
+
+
+    This is the base class. Inherit this to write logic for developing seperate logic
+    for ratelimiting strategy.
+    '''
+
+    def __init__(self, app, topic):
+        self.app = app
+        self.topic = topic
     
     @app.agent(value_type=Notification)
-    async def (self, notifications):
+    async def __call__(self, notifications):
         '''
         Filter the stream and put it on the next stream in line
         for processing by corresponding channel handler.
         '''
         async with notifications.transaction():
+            notifications = self.collect_and_filter(notifications)
             async for notification in notifications:
+
                 is_valid, notification = self.validate_data(notification)
 
                 if is_valid:
-                    
+                    data = self.collect_and_filter(notification)
                 else:
                     ''' Ignore the notification that has been rejected'''
                     pass
